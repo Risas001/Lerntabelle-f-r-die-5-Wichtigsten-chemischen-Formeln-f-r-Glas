@@ -1,0 +1,5 @@
+F:\Veröffentlichungen\WinFormsApp1.exe
+F:\Veröffentlichungen\WinFormsApp1.dll
+F:\Veröffentlichungen\WinFormsApp1.deps.json
+F:\Veröffentlichungen\WinFormsApp1.runtimeconfig.json
+F:\Veröffentlichungen\WinFormsApp1.pdb
