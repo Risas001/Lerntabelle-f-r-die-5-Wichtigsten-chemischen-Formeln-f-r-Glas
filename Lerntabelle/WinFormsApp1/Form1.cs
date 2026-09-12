@@ -244,15 +244,24 @@ namespace WinFormsApp1
 
         private void DgvTabelle_DragDrop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(string)))
-            {
-                string draggedText = (string)e.Data.GetData(typeof(string));
-                if (dgvTabelle.CurrentCell != null && dgvTabelle.CurrentCell.Value.ToString() == "")
-                {
-                    dgvTabelle.CurrentCell.Value = draggedText;
-                    begriffeListe.Items.Remove(draggedText);
-                }
-            }
+            if (!e.Data.GetDataPresent(typeof(string)))
+                return;
+
+            string draggedText = e.Data.GetData(typeof(string)) as string;
+            if (string.IsNullOrEmpty(draggedText))
+                return;
+
+            DataGridViewCell zelle = dgvTabelle.CurrentCell;
+            if (zelle == null || zelle.ReadOnly)
+                return;
+
+            // Value ist bei einer nie befüllten Zelle null, nicht "".
+            string inhalt = zelle.Value?.ToString() ?? "";
+            if (inhalt.Length > 0)
+                return;
+
+            zelle.Value = draggedText;
+            begriffeListe.Items.Remove(draggedText);
         }
     }
 }
