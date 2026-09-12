@@ -26,15 +26,37 @@ namespace WinFormsApp1
         private void InitializeUI()
         {
             this.Text = "Lern-Tabelle";
-            this.Size = new Size(900, 500);
+            this.ClientSize = new Size(900, 560);
+            this.MinimumSize = new Size(640, 480);
+
+            // Alles sitzt in einem Layout, damit beim Vergrößern keine
+            // leeren (weißen) Ränder am Rand oder unter der Tabelle stehen bleiben.
+            var layout = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(10),
+                ColumnCount = 1,
+                RowCount = 3
+            };
+            layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 70F));   // Tabelle
+            layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));       // Bedienleiste
+            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 30F));   // Begriffe
 
             dgvTabelle = new DataGridView
             {
-                Location = new Point(10, 50),
-                Size = new Size(770, 250),
+                Dock = DockStyle.Fill,
+                Margin = new Padding(0, 0, 0, 8),
                 ReadOnly = false,
                 AllowUserToAddRows = false,
                 AllowUserToDeleteRows = false,
+                AllowUserToResizeRows = false,
+                RowHeadersVisible = false,
+                // Spalten füllen die Breite komplett aus -> kein weißer Streifen rechts.
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                // Fläche unter der letzten Zeile in Fensterfarbe statt Weiß.
+                BackgroundColor = SystemColors.Control,
+                BorderStyle = BorderStyle.FixedSingle,
                 ColumnCount = 5
             };
 
@@ -47,46 +69,61 @@ namespace WinFormsApp1
             dgvTabelle.DragEnter += DgvTabelle_DragEnter;
             dgvTabelle.DragDrop += DgvTabelle_DragDrop;
 
+            var bedienleiste = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Margin = new Padding(0, 0, 0, 8),
+                Padding = new Padding(0),
+                WrapContents = false
+            };
+
             btnPruefen = new Button
             {
                 Text = "Überprüfen",
-                Location = new Point(10, 310),
-                Size = new Size(100, 30)
+                Size = new Size(100, 30),
+                Margin = new Padding(0, 0, 10, 0)
             };
             btnPruefen.Click += BtnPruefen_Click;
 
             btnNeustart = new Button
             {
                 Text = "Neustart",
-                Location = new Point(120, 310),
                 Size = new Size(100, 30),
+                Margin = new Padding(0, 0, 10, 0),
                 Visible = false
             };
             btnNeustart.Click += BtnNeustart_Click;
 
             cbLevel = new ComboBox
             {
-                Location = new Point(230, 310),
                 Size = new Size(100, 30),
+                Margin = new Padding(0),
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
             cbLevel.Items.AddRange(new string[] { "Level 1", "Level 2", "Level 3", "Level 4" });
             cbLevel.SelectedIndex = 0;
             cbLevel.SelectedIndexChanged += (s, e) => ErstelleTabelle(cbLevel.SelectedIndex + 1);
 
+            bedienleiste.Controls.Add(btnPruefen);
+            bedienleiste.Controls.Add(btnNeustart);
+            bedienleiste.Controls.Add(cbLevel);
+
             begriffeListe = new ListBox
             {
-                Location = new Point(10, 350),
-                Size = new Size(770, 100),
+                Dock = DockStyle.Fill,
+                Margin = new Padding(0),
+                BorderStyle = BorderStyle.FixedSingle,
                 AllowDrop = true
             };
             begriffeListe.MouseDown += BegriffeListe_MouseDown;
 
-            this.Controls.Add(dgvTabelle);
-            this.Controls.Add(btnPruefen);
-            this.Controls.Add(btnNeustart);
-            this.Controls.Add(cbLevel);
-            this.Controls.Add(begriffeListe);
+            layout.Controls.Add(dgvTabelle, 0, 0);
+            layout.Controls.Add(bedienleiste, 0, 1);
+            layout.Controls.Add(begriffeListe, 0, 2);
+
+            this.Controls.Add(layout);
         }
 
         private void ErstelleTabelle(int level)
